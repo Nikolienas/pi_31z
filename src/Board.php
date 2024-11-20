@@ -107,8 +107,18 @@ class Board {
         if ($this->getPlayer() !== $item->getColor()) {
             throw new Exception('Сейчас не ваш ход');
         }
-        if (!$item->canMove($from_row, $from_col, $to_row, $to_col, $this)) {
-            throw new Exception('Так ' . $item->getIcon() . ' ходить не может');
+        # проверить есть ли в пункте назначения фигура
+        $opponent = $this->getItem($to_row, $to_col);
+        if (!$opponent) {
+            if (!$item->canMove($from_row, $from_col, $to_row, $to_col, $this)) {
+                throw new Exception('Так ' . $item->getIcon() . ' ходить не может');
+            }
+        } else if ($opponent->getColor() === $item->getColor()) {
+            throw new Exception('Мы не можем срубить свою фигуру');
+        } else {
+            if (!$item->canAttack($from_row, $from_col, $to_row, $to_col, $this)) {
+                throw new Exception('Так ' . $item->getIcon() . ' ходить не может');
+            }
         }
         $this->setItem($from_row, $from_col, null);
         $this->setItem($to_row, $to_col, $item);

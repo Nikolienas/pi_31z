@@ -15,7 +15,7 @@ class Pawn extends Figure {
         $as_two_step_row = $this->getColor() === Color::White ? 1 : 6;
         $available = [$from_row + $direction];
         if ($as_two_step_row) {
-            $available[] = [$from_row + $direction * 2];
+            $available[] = $from_row + $direction * 2;
         }
         return in_array($to_row, $available);
     }

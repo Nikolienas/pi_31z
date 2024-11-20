@@ -7,6 +7,7 @@ interface IFigure {
     public function getColor(): Color;
     public function getIcon(): string;
     public function canMove(int $from_row, int $from_col, int $to_row, int $to_col, Board $board): bool;
+    public function canAttack(int $from_row, int $from_col, int $to_row, int $to_col, Board $board): bool;
 }
 
 abstract class Figure implements IFigure {
@@ -30,4 +31,7 @@ abstract class Figure implements IFigure {
         return false;
     }
 
+    public function canAttack(int $from_row, int $from_col, int $to_row, int $to_col, Board $board): bool {
+        return false;
+    }
 }
