@@ -1,8 +1,8 @@
-
 <?php
 require_once('color.php');
 require_once('IFigure.php');
 require_once('Pawn.php');
+require_once('Rook.php');
 
 class Board {
     private Color $player = Color::White;
@@ -16,13 +16,24 @@ class Board {
                 $this->board[$i][] = null;
             }
         }
-        foreach ([1, 6] as $row) {
+        foreach ([6, 1] as $row) {
             for ($col = 0; $col < 8; $col += 1) {
                 $this->setItem(
                     $row,
                     $col,
                     new Pawn(
-                        $row === 6 ? Color::White : Color::Black
+                        $row === 1 ? Color::White : Color::Black
+                    )
+                );
+            }
+        }
+        foreach ([7, 0] as $row) {
+            foreach ([0, 7] as $col) {
+                $this->setItem(
+                    $row,
+                    $col,
+                    new Rook(
+                        $row === 0 ? Color::White : Color::Black
                     )
                 );
             }
@@ -53,8 +64,8 @@ class Board {
             str_repeat('----+', 8),
         ]) . PHP_EOL;
         echo $line;
-        for ($i = 0; $i < 8; $i += 1) {
-            echo 8 - $i;
+        for ($i = 7; $i >= 0; $i -= 1) {
+            echo $i + 1;
             echo '  |';
             for ($j = 0; $j < 8; $j += 1) {
                 echo ' ';
@@ -76,5 +87,31 @@ class Board {
             echo ' ';
         }
         echo PHP_EOL;
+    }
+
+    private function changePlayer() {
+        $this->player = $this->getPlayer() === Color::White
+            ? Color::Black
+            : Color::White;
+    }
+
+    public function getPlayer(): Color {
+        return $this->player;
+    }
+
+    public function move(int $from_row, int $from_col, int $to_row, int $to_col): void {
+        $item = $this->getItem($from_row, $from_col);
+        if (!$item) {
+            throw new Exception('Фигура отсутствует');
+        }
+        if ($this->getPlayer() !== $item->getColor()) {
+            throw new Exception('Сейчас не ваш ход');
+        }
+        if (!$item->canMove($from_row, $from_col, $to_row, $to_col, $this)) {
+            throw new Exception('Так ' . $item->getIcon() . ' ходить не может');
+        }
+        $this->setItem($from_row, $from_col, null);
+        $this->setItem($to_row, $to_col, $item);
+        $this->changePlayer();
     }
 }
