@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 1);
 
 require_once ('src/color.php');
 require_once ('src/Board.php');
@@ -8,9 +9,9 @@ while (True) {
     $board->printBoard();
     echo PHP_EOL;
     echo 'Команды:' . PHP_EOL;
-    echo '    exit                               -- выход' . PHP_EOL;
-    echo '    move <col1><row1> <col2><row2>     -- ход из клетки (col1, row1)' . PHP_EOL;
-    echo '                                          в клетку (col2, row2)' . PHP_EOL;
+    echo '    exit                          -- выход' . PHP_EOL;
+    echo '    <col1><row1> <col2><row2>     -- ход из клетки (col1, row1)' . PHP_EOL;
+    echo '                                     в клетку (col2, row2)' . PHP_EOL;
     echo 'Ход ';
     echo ($board->getPlayer() === Color::White ? 'белых' : 'черных') . ':' . PHP_EOL;
     $cmd = readline();
@@ -18,7 +19,7 @@ while (True) {
     if ($cmd === 'exit') {
         exit;
     }
-    if (!preg_match('/^move ([A-H])([1-8]) ([A-H])([1-8])$/i', $cmd, $founds)) {
+    if (!preg_match('/^([A-H])([1-8]) ([A-H])([1-8])$/i', $cmd, $founds)) {
         echo 'Неверная команда (для продолжения нажмите Enter)' . PHP_EOL;
         readline();
         continue;

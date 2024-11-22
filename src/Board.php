@@ -3,6 +3,7 @@ require_once('color.php');
 require_once('IFigure.php');
 require_once('Pawn.php');
 require_once('Rook.php');
+require_once('Knight.php');
 
 class Board {
     private Color $player = Color::White;
@@ -18,13 +19,17 @@ class Board {
         }
         foreach ([6, 1] as $row) {
             for ($col = 0; $col < 8; $col += 1) {
-                $this->setItem(
-                    $row,
-                    $col,
-                    new Pawn(
-                        $row === 1 ? Color::White : Color::Black
-                    )
-                );
+                try {
+                    $this->setItem(
+                        $row,
+                        $col,
+                        new Pawn(
+                            $row === 1 ? Color::White : Color::Black
+                        )
+                    );
+                } catch(Exception $e){
+                    print_r([$row, $col]);
+                }
             }
         }
         foreach ([7, 0] as $row) {
@@ -33,6 +38,15 @@ class Board {
                     $row,
                     $col,
                     new Rook(
+                        $row === 0 ? Color::White : Color::Black
+                    )
+                );
+            }
+            foreach ([1, 6] as $col) {
+                $this->setItem(
+                    $row,
+                    $col,
+                    new Knight(
                         $row === 0 ? Color::White : Color::Black
                     )
                 );
@@ -61,7 +75,7 @@ class Board {
         $line = implode('', [
             '   ',
             '+',
-            str_repeat('----+', 8),
+            str_repeat('---+', 8),
         ]) . PHP_EOL;
         echo $line;
         for ($i = 7; $i >= 0; $i -= 1) {
@@ -73,7 +87,7 @@ class Board {
                 if ($item) {
                     echo $item->getIcon();
                 } else {
-                    echo '  ';
+                    echo ' ';
                 }
                 echo ' |';
             }
@@ -82,7 +96,7 @@ class Board {
         }
         echo '   ';
         for ($i = 0; $i < 8; $i += 1) {
-            echo '   ';
+            echo '  ';
             echo chr(ord('A') + $i);
             echo ' ';
         }
@@ -107,7 +121,9 @@ class Board {
         if ($this->getPlayer() !== $item->getColor()) {
             throw new Exception('Сейчас не ваш ход');
         }
-        # проверить есть ли в пункте назначения фигура
+        if ($from_col == $to_col && $from_row == $to_row) {
+            throw new Exception('Мы топчимся на месте');
+        }
         $opponent = $this->getItem($to_row, $to_col);
         if (!$opponent) {
             if (!$item->canMove($from_row, $from_col, $to_row, $to_col, $this)) {
