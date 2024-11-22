@@ -28,8 +28,4 @@ class Rook extends Figure {
         }
         return true;
     }
-
-    public function canAttack(int $from_row, int $from_col, int $to_row, int $to_col, Board $board): bool {
-        return $this->canMove($from_row, $from_col, $to_row, $to_col, $board);
-    }
 }

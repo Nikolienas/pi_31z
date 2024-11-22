@@ -4,6 +4,9 @@ require_once('IFigure.php');
 require_once('Pawn.php');
 require_once('Rook.php');
 require_once('Knight.php');
+require_once('Bishop.php');
+require_once('King.php');
+require_once('Queen.php');
 
 class Board {
     private Color $player = Color::White;
@@ -50,6 +53,22 @@ class Board {
                         $row === 0 ? Color::White : Color::Black
                     )
                 );
+            }
+            foreach ([2, 5] as $col) {
+                $this->setItem(
+                    $row,
+                    $col,
+                    new Bishop(
+                        $row === 0 ? Color::White : Color::Black
+                    )
+                );
+            }
+            if ($row == 7) {
+                $this->setItem($row, 3, new Queen(Color::Black));
+                $this->setItem($row, 4, new King(Color::Black));
+            } else {
+                $this->setItem($row, 4, new Queen(Color::White));
+                $this->setItem($row, 3, new King(Color::White));
             }
         }
     }
