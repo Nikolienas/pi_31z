@@ -71,6 +71,10 @@ class Board {
                 $this->setItem($row, 3, new King(Color::White));
             }
         }
+        $this->setItem(3, 2, $this->getItem(7, 0));
+        $this->setItem(7, 0, null);
+        $this->setItem(2, 4, $this->getItem(6, 4));
+        $this->setItem(6, 4, null);
     }
 
     public function getItem(int $row, int $col): IFigure | null {
@@ -157,6 +161,51 @@ class Board {
         }
         $this->setItem($from_row, $from_col, null);
         $this->setItem($to_row, $to_col, $item);
+        if ($this->isCheck($this->player)) {
+            $this->setItem($from_row, $from_col, $item);
+            $this->setItem($to_row, $to_col, $opponent);
+            throw new Exception('Король будет шах!');
+        }
         $this->changePlayer();
+        if ($this->isCheck($this->player)) {
+            $message = 'Внимание! Шах королю ';
+            if ($this->getPlayer() == Color::White) {
+                $message .= 'белых';
+            } else {
+                $message .= 'черных';
+            }
+            throw new Exception($message);
+        }
+    }
+    protected function isCheck(Color $color) {
+        $from_row = null;
+        $from_col = null;
+        foreach ($this->board as $row => $line) {
+            foreach ($line as $col => $value) {
+                if ($value instanceof King && $value->getColor() == $color) {
+                    $from_row = $row;
+                    $from_col = $col;
+                    break;
+                }
+            }
+            if ($from_col !== null) {
+                break;
+            }
+        }
+        if ($from_col === null) {
+            return false;
+        }
+        foreach ($this->board as $row => $line) {
+            foreach ($line as $col => $value) {
+                if (!$value || $value->getColor() == $color) {
+                    continue;
+                }
+                if ($value->canAttack($row, $col, $from_row, $from_col, $this)) {
+                    return true;
+                }
+            }
+            
+        }
+        return false;
     }
 }
